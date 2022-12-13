@@ -36,7 +36,7 @@ public class JwtCookieProvider {
     }
 
     public Cookie generateRefreshCookie(String token) {
-        return cookieUtil.create(rtCookieName, token, false, 1, domain);
+        return cookieUtil.create(rtCookieName, token, false, -1, domain);
     }
 
     public Cookie clearAccessCookie() {

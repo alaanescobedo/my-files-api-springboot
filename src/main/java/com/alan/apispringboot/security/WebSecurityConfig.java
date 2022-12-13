@@ -3,6 +3,7 @@ package com.alan.apispringboot.security;
 import com.alan.apispringboot.security.jwt.JwtEntryPoint;
 import com.alan.apispringboot.security.jwt.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +20,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.Arrays;
 
 
 @Configuration
@@ -33,6 +37,8 @@ public class WebSecurityConfig {
     public JwtFilter jwtFilter() {
         return new JwtFilter();
     }
+    @Value("${app.cors.allowed-origins}")
+    private String[] allowedOrigins;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -46,11 +52,22 @@ public class WebSecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        System.out.println("allowedOrigins: " + Arrays.toString(allowedOrigins));
         http.httpBasic();
-        http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        http.cors().configurationSource(request -> {
+            CorsConfiguration configuration = new CorsConfiguration();
+            configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
+            configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE"));
+            configuration.setAllowCredentials(true);
+            configuration.addExposedHeader("Message");
+            configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
+            return configuration;
+        });
+        http.csrf().disable();
 
         http.authorizeRequests()
                 .antMatchers("/auth/register","/auth/login").permitAll()
+                .antMatchers("/users/public-profile").permitAll()
                 .anyRequest().authenticated();
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

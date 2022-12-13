@@ -34,10 +34,15 @@ public class JwtFilter extends OncePerRequestFilter {
         logger.info("doFilterInternal");
         try {
             String token = getToken(request);
+            logger.info("token: " + token);
             if (token != null && jwtProvider.validateToken(token)) {
+                logger.info("token is valid");
                 String userName = jwtProvider.getUsernameFromToken(token);
+                logger.info("userName: " + userName);
                 UserDetails userDetails = userDetailsServiceImp.loadUserByUsername(userName);
+                logger.info("userDetails: " + userDetails);
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                logger.info("auth: " + auth);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         } catch (Exception e) {
@@ -48,7 +53,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private String getToken(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, atCookieName);
-        logger.info("cookie: " + cookie);
+        logger.info("cookie: " + cookie.getValue());
         return cookie != null ? cookie.getValue() : null;
     }
 }

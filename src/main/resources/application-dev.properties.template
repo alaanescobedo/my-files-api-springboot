@@ -1,0 +1,29 @@
+## DATABASE
+spring.datasource.url=
+spring.datasource.username=
+spring.datasource.password=
+spring.jpa.hibernate.ddl-auto=
+spring.jpa.show-sql=
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+## JWT
+jwt.accessSecret=
+jwt.AccessExpiration=
+jwt.refreshSecret=
+jwt.refreshExpiration=
+
+## COOKIES
+jwt.accessTokenCookieName=
+jwt.refreshTokenCookieName=
+cookie.domain=
+
+## CLOUDINARY
+cloudinary.cloudName=
+cloudinary.apiKey=
+cloudinary.apiSecret=
+
+## CORS
+app.cors.allowed-origins=http://localhost:3000
+
+## SERVER
+server.port=5000

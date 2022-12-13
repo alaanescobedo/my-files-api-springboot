@@ -1,5 +1,6 @@
 package com.alan.apispringboot.auth.controllers;
 
+import com.alan.apispringboot.Message;
 import com.alan.apispringboot.auth.dtos.AuthUserDTO;
 import com.alan.apispringboot.auth.dtos.RegisterDTO;
 import com.alan.apispringboot.auth.dtos.UserDTO;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +27,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 
-@Validated
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -44,21 +46,31 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDto) {
-        logger.info("Registering user: " + registerDto.toString());
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDto, BindingResult result) {
+        logger.info("Registering user: " + registerDto.getUsername());
 
+        if (result.hasErrors()) {
+            // TODO: HANDLE ERRORS
+            List<ObjectError> errors = result.getAllErrors();
+            String errorMessages = errors.stream().map(e -> e.getDefaultMessage()).reduce("", (a, b) -> a + "\n" + b);
+            return new ResponseEntity<>(new Message(errorMessages), HttpStatus.BAD_REQUEST);
+        }
         try {
             usersService.registerUser(registerDto);
-            return new ResponseEntity<>("Registered successfully", HttpStatus.CREATED);
+            logger.info("User registered successfully");
+            return new ResponseEntity<Message>(new Message("Registered successfully"), HttpStatus.CREATED);
         } catch (Exception e) {
             logger.error("Error creating user: " + e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Message>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody AuthUserDTO authUserDTO, HttpServletResponse response) {
-        logger.info("Login user: " + authUserDTO.toString());
+    public ResponseEntity<?> login(HttpServletResponse response, @Valid @RequestBody AuthUserDTO authUserDTO, BindingResult bindingResult) {
+        logger.info("Login user: " + authUserDTO.getUsername());
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<Message>(new Message("Invalid data"), HttpStatus.BAD_REQUEST);
+        }
 
         try {
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(authUserDTO.getUsername(), authUserDTO.getPassword());
@@ -70,10 +82,12 @@ public class AuthController {
 
             response.addCookie(atCookie);
             response.addCookie(rtCookie);
-            return new ResponseEntity<>("Logged in successfully", HttpStatus.OK);
+            logger.info("Cookies: " + atCookie.getValue() + " " + rtCookie.getValue());
+            logger.info("User logged in successfully");
+            return new ResponseEntity<Message>(new Message("Logged in successfully"), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error login user: " + e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Message>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -82,12 +96,15 @@ public class AuthController {
         logger.info("Authenticating user");
         try {
             CurrentUser currentUser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            logger.info("Current user: " + currentUser.getUsername());
             User user = usersService.getUserByUsername(currentUser.getUsername());
+            logger.info("User found: " + user.getUsername());
             UserDTO userDTO = usersService.mapUserToUserDTO(user);
+            logger.info("User mapped to DTO");
             return new ResponseEntity<UserDTO>(userDTO, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error authenticating user: " + e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Message>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -98,10 +115,11 @@ public class AuthController {
             SecurityContextHolder.clearContext();
             List<Cookie> cookies = authService.getCookiesForLogout();
             cookies.forEach(response::addCookie);
-            return new ResponseEntity<>("Logged out successfully", HttpStatus.OK);
+            logger.info("User logged out successfully");
+            return new ResponseEntity<Message>(new Message("Logged out successfully"), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error logging out user: " + e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Message>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -112,10 +130,10 @@ public class AuthController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             Cookie atCookie = authService.getCookieWithAccessToken(authentication);
             response.addCookie(atCookie);
-            return new ResponseEntity<>("Refreshed successfully", HttpStatus.OK);
+            return new ResponseEntity<Message>(new Message("Refreshed successfully"), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error refreshing token: " + e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Message>(new Message(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 }
