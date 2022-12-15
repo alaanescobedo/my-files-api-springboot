@@ -1,18 +1,13 @@
 package com.alan.apispringboot.users.entities;
 
+import com.alan.apispringboot.auth.dtos.UserDTO;
 import com.alan.apispringboot.files.FilePublic;
-import com.alan.apispringboot.users.enums.RoleEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
-import org.springframework.data.repository.cdi.Eager;
 
 import javax.persistence.*;
-import javax.swing.text.html.Option;
-import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Data
@@ -38,6 +33,9 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private FilePublic avatar;
+
+    @OneToMany(mappedBy = "owner")
+    private Set<FilePublic> filesPublic = new HashSet<>();
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")

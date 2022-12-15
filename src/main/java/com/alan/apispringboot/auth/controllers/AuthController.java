@@ -2,7 +2,6 @@ package com.alan.apispringboot.auth.controllers;
 
 import com.alan.apispringboot.Message;
 import com.alan.apispringboot.auth.dtos.AuthUserDTO;
-import com.alan.apispringboot.auth.dtos.RegisterDTO;
 import com.alan.apispringboot.auth.dtos.UserDTO;
 import com.alan.apispringboot.auth.services.AuthService;
 import com.alan.apispringboot.security.CurrentUser;
@@ -46,7 +45,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO registerDto, BindingResult result) {
+    public ResponseEntity<?> register(@Valid @RequestBody AuthUserDTO registerDto, BindingResult result) {
         logger.info("Registering user: " + registerDto.getUsername());
 
         if (result.hasErrors()) {

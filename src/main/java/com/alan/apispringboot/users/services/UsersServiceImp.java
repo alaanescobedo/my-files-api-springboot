@@ -1,10 +1,9 @@
 package com.alan.apispringboot.users.services;
 
-import com.alan.apispringboot.auth.dtos.RegisterDTO;
+import com.alan.apispringboot.auth.dtos.AuthUserDTO;
 import com.alan.apispringboot.auth.dtos.UserDTO;
 import com.alan.apispringboot.exceptions.NotFoundException;
 import com.alan.apispringboot.files.services.AwsS3Service;
-import com.alan.apispringboot.files.services.CloudinaryService;
 import com.alan.apispringboot.files.FilePublic;
 import com.alan.apispringboot.files.FilePublicDTO;
 import com.alan.apispringboot.files.services.FilePublicService;
@@ -19,11 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,7 +34,7 @@ public class UsersServiceImp implements UsersService {
     private FilePublicService filePublicService;
 
     @Autowired
-    private AwsS3Service imgCloudStoreService;
+    private AwsS3Service cloudFilesService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -58,7 +53,20 @@ public class UsersServiceImp implements UsersService {
     }
 
     @Override
-    public User registerUser(RegisterDTO registerDto) {
+    public User getUserById(Long id) {
+        try {
+            User user = usersRepository.findById(id).orElse(null);
+            if (user == null) {
+                throw new NotFoundException("User with id: " + id);
+            }
+            return user;
+        } catch (Exception e) {
+            throw new NotFoundException("User with id: " + id);
+        }
+    }
+
+    @Override
+    public User registerUser(AuthUserDTO registerDto) {
         try {
             String hashedPassword = passwordEncoder.encode(registerDto.getPassword());
             Boolean UserExists = usersRepository.existsByUsername(registerDto.getUsername());
@@ -119,23 +127,44 @@ public class UsersServiceImp implements UsersService {
     }
 
     @Override
-    public UserDTO uploadAvatar(Long id, MultipartFile image) throws IOException {
+    public UserDTO uploadAvatar(Long id, MultipartFile avatar) throws Exception {
         try {
-            User user = usersRepository.findById(id).orElse(null);
-            logger.info("User: " + user);
-            if (user == null) {
-                throw new NotFoundException("User with id: " + id);
-            }
-            FilePublicDTO filePublicDTO = imgCloudStoreService.upload(image);
+            logger.info("Uploading avatar");
+            User user = getUserById(id);
+
+            FilePublicDTO filePublicDTO = cloudFilesService.uploadAvatar(avatar);
             logger.info("Result: " + filePublicDTO.toString());
 
-            FilePublic avatar = filePublicService.saveFile(filePublicDTO);
-            logger.info("Avatar: " + avatar);
-            user.setAvatar(avatar);
-            User userUpdated = usersRepository.save(user);
-            return mapUserToUserDTO(userUpdated);
+            FilePublic avatarFile = filePublicService.saveFile(filePublicDTO);
+
+            logger.info("File Avatar: " + avatarFile.toString());
+            user.setAvatar(avatarFile);
+            usersRepository.save(user);
+            return mapUserToUserDTO(user);
         } catch (Exception e) {
             throw new RuntimeException("Error uploading avatar " + e.getMessage());
+        }
+    }
+
+
+    @Override
+    public FilePublic uploadPublicFile(Long id, MultipartFile file) throws Exception {
+        try {
+            logger.info("Uploading public file");
+            User user = getUserById(id);
+
+            FilePublicDTO filePublicDTO = cloudFilesService.uploadPublicFile(file);
+            // filePublicDTO.setOwner(user);
+            logger.info("Result: " + filePublicDTO.toString());
+
+            FilePublic filePublic = filePublicService.saveFile(filePublicDTO);
+
+            logger.info("File public: " + filePublic.toString());
+            // user.getFilesPublic().add(filePublic);
+            usersRepository.save(user);
+            return filePublic;
+        } catch (Exception e) {
+            throw new RuntimeException("Error uploading public file " + e.getMessage());
         }
     }
 
@@ -143,9 +172,25 @@ public class UsersServiceImp implements UsersService {
     public List<UserDTO> getAllUsersPublicData() {
         List<User> users = usersRepository.findAll();
         logger.info("Users: " + users.toString());
-        List<UserDTO> usersDTO = users.stream().map(user -> mapUserToUserDTO(user)).collect(Collectors.toList());
+        List<UserDTO> usersDTO = mapUsersToUsersDTO(users);
         logger.info("UsersDTO: " + usersDTO.toString());
         return usersDTO;
+    }
+
+    // @Override
+    // public List<FilePublicDTO> getAllPublicFilesByUsername(String username) {
+    //     try {
+    //         User user = getUserByUsername(username);
+    //         Set<FilePublic> filesPublic = user.getFilesPublic();
+
+    //         return filePublicService.mapListFilePublicToDTOS(new ArrayList<>(filesPublic));
+    //     } catch (Exception e) {
+    //         throw new RuntimeException("Error getting public files " + e.getMessage());
+    //     }
+    // }
+
+    private List<UserDTO> mapUsersToUsersDTO(List<User> users) {
+        return users.stream().map(user -> mapUserToUserDTO(user)).collect(Collectors.toList());
     }
 }
 
