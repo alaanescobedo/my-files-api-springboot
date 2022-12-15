@@ -2,6 +2,7 @@ package com.alan.apispringboot.auth.controllers;
 
 import com.alan.apispringboot.Message;
 import com.alan.apispringboot.auth.dtos.AuthUserDTO;
+import com.alan.apispringboot.auth.dtos.RegisterUserDTO;
 import com.alan.apispringboot.auth.dtos.UserDTO;
 import com.alan.apispringboot.auth.services.AuthService;
 import com.alan.apispringboot.security.CurrentUser;
@@ -18,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -45,7 +45,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody AuthUserDTO registerDto, BindingResult result) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterUserDTO registerDto, BindingResult result) {
         logger.info("Registering user: " + registerDto.getUsername());
 
         if (result.hasErrors()) {

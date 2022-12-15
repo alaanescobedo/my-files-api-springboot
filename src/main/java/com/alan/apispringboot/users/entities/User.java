@@ -1,6 +1,5 @@
 package com.alan.apispringboot.users.entities;
 
-import com.alan.apispringboot.auth.dtos.UserDTO;
 import com.alan.apispringboot.files.FilePublic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
@@ -11,6 +10,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 
 @Entity
 @Table(name = "users")
@@ -34,6 +36,7 @@ public class User {
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private FilePublic avatar;
 
+    @Builder.Default
     @OneToMany(mappedBy = "owner")
     private Set<FilePublic> filesPublic = new HashSet<>();
 
@@ -41,6 +44,7 @@ public class User {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

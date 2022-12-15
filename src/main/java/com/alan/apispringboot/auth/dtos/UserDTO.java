@@ -3,13 +3,20 @@ package com.alan.apispringboot.auth.dtos;
 import com.alan.apispringboot.files.FilePublic;
 import com.alan.apispringboot.users.entities.Address;
 import com.alan.apispringboot.users.entities.Role;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+
 public class UserDTO {
 
     @NotBlank

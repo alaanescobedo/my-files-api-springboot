@@ -1,6 +1,7 @@
 package com.alan.apispringboot.users.services;
 
 import com.alan.apispringboot.auth.dtos.AuthUserDTO;
+import com.alan.apispringboot.auth.dtos.RegisterUserDTO;
 import com.alan.apispringboot.auth.dtos.UserDTO;
 import com.alan.apispringboot.exceptions.NotFoundException;
 import com.alan.apispringboot.files.services.AwsS3Service;
@@ -66,7 +67,7 @@ public class UsersServiceImp implements UsersService {
     }
 
     @Override
-    public User registerUser(AuthUserDTO registerDto) {
+    public User registerUser(RegisterUserDTO registerDto) {
         try {
             String hashedPassword = passwordEncoder.encode(registerDto.getPassword());
             Boolean UserExists = usersRepository.existsByUsername(registerDto.getUsername());
@@ -80,17 +81,16 @@ public class UsersServiceImp implements UsersService {
             }
 
             Role userRole = rolesService.getRoleByName(RoleEnum.ROLE_USER);
-            Set<Role> roles = new HashSet<>();
-            roles.add(userRole);
 
-            User userCreated = new User();
-            userCreated.setUsername(registerDto.getUsername());
-            userCreated.setEmail(registerDto.getEmail());
-            userCreated.setPassword(hashedPassword);
-            userCreated.setRoles(roles);
-            userCreated.setAddress(registerDto.getAddress());
-            userCreated.setAvatar(null);
-            return usersRepository.save(userCreated);
+            User user = User.builder()
+                    .username(registerDto.getUsername())
+                    .email(registerDto.getEmail())
+                    .password(hashedPassword)
+                    .address(registerDto.getAddress())
+                    .avatar(null)
+                    .build();
+            user.getRoles().add(userRole);
+            return usersRepository.save(user);
         } catch (Exception e) {
             throw new RuntimeException("Error creating user " + e.getMessage());
         }
@@ -105,47 +105,21 @@ public class UsersServiceImp implements UsersService {
     }
 
     @Override
-    public UserDTO mapUserToUserDTO(User user) {
-        logger.info("Mapping user to userDTO");
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(user.getId());
-        logger.info("User id: " + user.getId());
-        userDTO.setUsername(user.getUsername());
-        logger.info("User username: " + user.getUsername());
-        userDTO.setEmail(user.getEmail());
-        logger.info("User email: " + user.getEmail());
-        userDTO.setAddress(user.getAddress());
-        logger.info("User address: " + user.getAddress());
-        userDTO.setRoles(user.getRoles());
-        logger.info("User roles: " + user.getRoles());
-        FilePublic avatar = user.getAvatar();
-        logger.info("User avatar: " + user.getAvatar());
-        userDTO.setAvatar(avatar);
-        logger.info("User avatar: " + avatar);
-        logger.info("UserDTO: >>>" + userDTO.toString());
-        return userDTO;
-    }
-
-    @Override
     public UserDTO uploadAvatar(Long id, MultipartFile avatar) throws Exception {
         try {
             logger.info("Uploading avatar");
             User user = getUserById(id);
 
             FilePublicDTO filePublicDTO = cloudFilesService.uploadAvatar(avatar);
-            logger.info("Result: " + filePublicDTO.toString());
-
             FilePublic avatarFile = filePublicService.saveFile(filePublicDTO);
-
-            logger.info("File Avatar: " + avatarFile.toString());
             user.setAvatar(avatarFile);
+
             usersRepository.save(user);
             return mapUserToUserDTO(user);
         } catch (Exception e) {
             throw new RuntimeException("Error uploading avatar " + e.getMessage());
         }
     }
-
 
     @Override
     public FilePublic uploadPublicFile(Long id, MultipartFile file) throws Exception {
@@ -155,7 +129,6 @@ public class UsersServiceImp implements UsersService {
 
             FilePublicDTO filePublicDTO = cloudFilesService.uploadPublicFile(file);
             // filePublicDTO.setOwner(user);
-            logger.info("Result: " + filePublicDTO.toString());
 
             FilePublic filePublic = filePublicService.saveFile(filePublicDTO);
 
@@ -179,18 +152,31 @@ public class UsersServiceImp implements UsersService {
 
     // @Override
     // public List<FilePublicDTO> getAllPublicFilesByUsername(String username) {
-    //     try {
-    //         User user = getUserByUsername(username);
-    //         Set<FilePublic> filesPublic = user.getFilesPublic();
+    // try {
+    // User user = getUserByUsername(username);
+    // Set<FilePublic> filesPublic = user.getFilesPublic();
 
-    //         return filePublicService.mapListFilePublicToDTOS(new ArrayList<>(filesPublic));
-    //     } catch (Exception e) {
-    //         throw new RuntimeException("Error getting public files " + e.getMessage());
-    //     }
+    // return filePublicService.mapListFilePublicToDTOS(new
+    // ArrayList<>(filesPublic));
+    // } catch (Exception e) {
+    // throw new RuntimeException("Error getting public files " + e.getMessage());
     // }
+    // }
+
+    @Override
+    public UserDTO mapUserToUserDTO(User user) {
+        logger.info("Mapping user to userDTO");
+        return UserDTO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .address(user.getAddress())
+                .roles(user.getRoles())
+                .avatar(user.getAvatar())
+                .build();
+    }
 
     private List<UserDTO> mapUsersToUsersDTO(List<User> users) {
         return users.stream().map(user -> mapUserToUserDTO(user)).collect(Collectors.toList());
     }
 }
-
