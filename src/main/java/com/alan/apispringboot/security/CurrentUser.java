@@ -2,8 +2,6 @@ package com.alan.apispringboot.security;
 
 import com.alan.apispringboot.users.entities.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,8 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CurrentUser implements UserDetails {
-
-    private static final Logger logger = LoggerFactory.getLogger(CurrentUser.class);
 
     private Long id;
     private String username;

@@ -5,16 +5,12 @@ import com.alan.apispringboot.auth.dtos.AuthUserDTO;
 import com.alan.apispringboot.auth.dtos.RegisterUserDTO;
 import com.alan.apispringboot.auth.dtos.UserDTO;
 import com.alan.apispringboot.auth.services.AuthService;
-import com.alan.apispringboot.security.CurrentUser;
-import com.alan.apispringboot.users.entities.User;
-import com.alan.apispringboot.users.services.UsersService;
+import com.alan.apispringboot.users.services.UserAuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
@@ -36,13 +32,8 @@ public class AuthController {
     @Autowired
     private AuthService authService;
     @Autowired
-    private UsersService usersService;
+    private UserAuthService userAuthService;
 
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-
-    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder) {
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
-    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterUserDTO registerDto, BindingResult result) {
@@ -55,8 +46,7 @@ public class AuthController {
             return new ResponseEntity<>(new Message(errorMessages), HttpStatus.BAD_REQUEST);
         }
         try {
-            usersService.registerUser(registerDto);
-            logger.info("User registered successfully");
+            userAuthService.registerUser(registerDto);
             return new ResponseEntity<Message>(new Message("Registered successfully"), HttpStatus.CREATED);
         } catch (Exception e) {
             logger.error("Error creating user: " + e.getMessage());
@@ -72,17 +62,13 @@ public class AuthController {
         }
 
         try {
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(authUserDTO.getUsername(), authUserDTO.getPassword());
-            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            Authentication authentication = userAuthService.createAuthentication(authUserDTO);
             Cookie atCookie = authService.getCookieWithAccessToken(authentication);
             Cookie rtCookie = authService.getCookieWithRefreshToken(authentication);
-            usersService.saveRefreshToken(rtCookie.getValue(), authUserDTO.getUsername());
+            userAuthService.saveRefreshToken(rtCookie.getValue(), authUserDTO.getUsername());
 
             response.addCookie(atCookie);
             response.addCookie(rtCookie);
-            logger.info("Cookies: " + atCookie.getValue() + " " + rtCookie.getValue());
-            logger.info("User logged in successfully");
             return new ResponseEntity<Message>(new Message("Logged in successfully"), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error login user: " + e.getMessage());
@@ -94,12 +80,7 @@ public class AuthController {
     public ResponseEntity<?> authenticate() {
         logger.info("Authenticating user");
         try {
-            CurrentUser currentUser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            logger.info("Current user: " + currentUser.getUsername());
-            User user = usersService.getUserByUsername(currentUser.getUsername());
-            logger.info("User found: " + user.getUsername());
-            UserDTO userDTO = usersService.mapUserToUserDTO(user);
-            logger.info("User mapped to DTO");
+            UserDTO userDTO = userAuthService.getCurrentUserDTO();
             return new ResponseEntity<UserDTO>(userDTO, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error authenticating user: " + e.getMessage());
@@ -114,7 +95,6 @@ public class AuthController {
             SecurityContextHolder.clearContext();
             List<Cookie> cookies = authService.getCookiesForLogout();
             cookies.forEach(response::addCookie);
-            logger.info("User logged out successfully");
             return new ResponseEntity<Message>(new Message("Logged out successfully"), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error logging out user: " + e.getMessage());
@@ -126,7 +106,7 @@ public class AuthController {
     public ResponseEntity<?> refresh(HttpServletResponse response) {
         logger.info("Refreshing token");
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Authentication authentication = userAuthService.getAuthentication();
             Cookie atCookie = authService.getCookieWithAccessToken(authentication);
             response.addCookie(atCookie);
             return new ResponseEntity<Message>(new Message("Refreshed successfully"), HttpStatus.OK);

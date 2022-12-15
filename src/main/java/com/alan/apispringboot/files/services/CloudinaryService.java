@@ -39,7 +39,6 @@ public class CloudinaryService {
     public Map upload(MultipartFile file) throws IOException {
         try {
             logger.info("Uploading file to cloudinary");
-            logger.info("Cloudinary: " + cloudinary);
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
                     "folder", "avatars",
                     "public_id", file.getOriginalFilename(),
@@ -47,9 +46,6 @@ public class CloudinaryService {
                     "allowed_formats", "webp, png, jpg, jpeg",
                     "moderation", "manual"
             ));
-            logger.info("Upload result: " + uploadResult);
-            logger.info("Upload result url: " + uploadResult.get("url"));
-            logger.info("File id: " + uploadResult.get("public_id"));
             return uploadResult;
         } catch (Exception e) {
             logger.error("Error uploading file to cloudinary: " + e.getMessage());
@@ -57,17 +53,4 @@ public class CloudinaryService {
         }
     }
 
-    public Map delete(String id) throws IOException {
-//        Map result = cloudinary.uploader().destroy(id, ObjectUtils.emptyMap());
-//        return result;
-        return null;
-    }
-
-    private File convertMultiPartToFile(MultipartFile multipartFile) throws IOException {
-        File file = new File(multipartFile.getOriginalFilename());
-        FileOutputStream fo = new FileOutputStream(file);
-        fo.write(multipartFile.getBytes());
-        fo.close();
-        return file;
-    }
 }

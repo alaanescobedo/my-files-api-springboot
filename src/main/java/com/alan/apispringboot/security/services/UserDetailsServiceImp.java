@@ -1,8 +1,6 @@
 package com.alan.apispringboot.security.services;
 
-import com.alan.apispringboot.auth.dtos.UserDTO;
 import com.alan.apispringboot.security.CurrentUser;
-import com.alan.apispringboot.users.entities.Role;
 import com.alan.apispringboot.users.entities.User;
 import com.alan.apispringboot.users.services.UsersService;
 import org.slf4j.Logger;
@@ -12,10 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserDetailsServiceImp implements UserDetailsService {
@@ -27,6 +21,7 @@ public class UserDetailsServiceImp implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        logger.info("Loading user by username: " + username);
         User user = userService.getUserByUsername(username);
         return CurrentUser.build(user);
     }

@@ -25,13 +25,12 @@ public class AwsRekognitionService {
     @Autowired
     private AWSConfig awsConfig;
 
-    public DetectModerationLabelsResult detectModerationLabels(MultipartFile imageToCheck) throws IOException {
+    private DetectModerationLabelsResult detectModerationLabels(MultipartFile imageToCheck) throws IOException {
         try {
             logger.info("Detecting moderation labels for image: " + imageToCheck.getOriginalFilename());
             DetectModerationLabelsRequest request = new DetectModerationLabelsRequest()
                     .withImage(new Image().withBytes(ByteBuffer.wrap(imageToCheck.getBytes())))
                     .withMinConfidence(50F);
-            logger.info("Detection completed, request: " + request.toString());
             return awsConfig.amazonRekognition().detectModerationLabels(request);
         } catch (Exception e) {
             logger.error("Error {} occurred while detecting moderation labels", e.getLocalizedMessage());

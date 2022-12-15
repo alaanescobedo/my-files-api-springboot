@@ -1,18 +1,12 @@
 package com.alan.apispringboot.security.cookie;
 
-import com.alan.apispringboot.security.jwt.JwtProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
-import java.util.Date;
 
 @Component
 public class JwtCookieProvider {
-    private final static Logger logger = LoggerFactory.getLogger(JwtProvider.class);
 
     @Value("${jwt.accessTokenCookieName}")
     private String atCookieName;
@@ -25,26 +19,20 @@ public class JwtCookieProvider {
     @Value("${cookie.domain}")
     private String domain;
 
-
-
-    @Autowired
-    private CookieUtil cookieUtil;
-
-
     public Cookie generateAccessCookie(String token) {
-        return cookieUtil.create(atCookieName, token, false, -1, domain);
+        return CookieUtil.create(atCookieName, token, false, -1, domain);
     }
 
     public Cookie generateRefreshCookie(String token) {
-        return cookieUtil.create(rtCookieName, token, false, -1, domain);
+        return CookieUtil.create(rtCookieName, token, false, -1, domain);
     }
 
     public Cookie clearAccessCookie() {
-        return cookieUtil.clear(atCookieName, domain);
+        return CookieUtil.clear(atCookieName, domain);
     }
 
     public Cookie clearRefreshCookie() {
-        return cookieUtil.clear(rtCookieName, domain);
+        return CookieUtil.clear(rtCookieName, domain);
     }
 
 }

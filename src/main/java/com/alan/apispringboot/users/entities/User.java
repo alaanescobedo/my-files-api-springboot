@@ -1,7 +1,7 @@
 package com.alan.apispringboot.users.entities;
 
 import com.alan.apispringboot.auth.dtos.UserDTO;
-import com.alan.apispringboot.files.FilePublic;
+import com.alan.apispringboot.files.entities.FilePublic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 

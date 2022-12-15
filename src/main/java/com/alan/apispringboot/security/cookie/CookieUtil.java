@@ -3,7 +3,6 @@ package com.alan.apispringboot.security.cookie;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 
 @Component
 public class CookieUtil {

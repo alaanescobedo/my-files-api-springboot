@@ -1,6 +1,6 @@
 package com.alan.apispringboot.auth.dtos;
 
-import com.alan.apispringboot.files.FilePublic;
+import com.alan.apispringboot.files.entities.FilePublic;
 import com.alan.apispringboot.users.entities.Address;
 import com.alan.apispringboot.users.entities.Role;
 import lombok.AllArgsConstructor;

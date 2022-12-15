@@ -1,4 +1,4 @@
-package com.alan.apispringboot.files;
+package com.alan.apispringboot.files.entities;
 
 import com.alan.apispringboot.users.entities.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;

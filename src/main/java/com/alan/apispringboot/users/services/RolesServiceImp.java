@@ -7,8 +7,6 @@ import com.alan.apispringboot.users.repositories.RolesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class RolesServiceImp implements RolesService {
 
@@ -17,10 +15,17 @@ public class RolesServiceImp implements RolesService {
 
     @Override
     public Role getRoleByName(RoleEnum roleName) {
-        try{
+        try {
             return rolesRepository.findByRoleName(roleName).get();
         } catch (Exception e) {
             throw new NotFoundException("Role with name: " + roleName);
         }
     }
+
+    @Override
+    public Role getDefaultRole() {
+        return rolesRepository.findByRoleName(RoleEnum.ROLE_USER)
+                .orElseThrow(() -> new NotFoundException("Role with name: " + RoleEnum.ROLE_USER));
+    }
+
 }

@@ -18,7 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -67,7 +66,7 @@ public class WebSecurityConfig {
 
         http.authorizeRequests()
                 .antMatchers("/auth/register","/auth/login").permitAll()
-                .antMatchers("/users/public-profile").permitAll()
+                .antMatchers("/users/public-profiles").permitAll()
                 .anyRequest().authenticated();
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
