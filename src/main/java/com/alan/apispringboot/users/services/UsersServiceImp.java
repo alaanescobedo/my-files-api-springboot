@@ -98,10 +98,14 @@ public class UsersServiceImp implements UsersService {
 
     @Override
     public void saveRefreshToken(String refreshToken, String username) {
-        String hashedRefreshToken = passwordEncoder.encode(refreshToken);
-        User user = getUserByUsername(username);
-        user.setRefreshToken(hashedRefreshToken);
-        usersRepository.save(user);
+        try {
+            String hashedRefreshToken = passwordEncoder.encode(refreshToken);
+            User user = getUserByUsername(username);
+            user.setRefreshToken(hashedRefreshToken);
+            usersRepository.save(user);
+        } catch (Exception e) {
+            throw new RuntimeException("Error saving refresh token " + e.getMessage());
+        }
     }
 
     @Override
@@ -128,14 +132,8 @@ public class UsersServiceImp implements UsersService {
             User user = getUserById(id);
 
             FilePublicDTO filePublicDTO = cloudFilesService.uploadPublicFile(file);
-            // filePublicDTO.setOwner(user);
-
-            FilePublic filePublic = filePublicService.saveFile(filePublicDTO);
-
-            logger.info("File public: " + filePublic.toString());
-            // user.getFilesPublic().add(filePublic);
-            usersRepository.save(user);
-            return filePublic;
+            filePublicDTO.setOwner(user);
+            return filePublicService.saveFile(filePublicDTO);
         } catch (Exception e) {
             throw new RuntimeException("Error uploading public file " + e.getMessage());
         }
@@ -143,25 +141,28 @@ public class UsersServiceImp implements UsersService {
 
     @Override
     public List<UserDTO> getAllUsersPublicData() {
-        List<User> users = usersRepository.findAll();
-        logger.info("Users: " + users.toString());
-        List<UserDTO> usersDTO = mapUsersToUsersDTO(users);
-        logger.info("UsersDTO: " + usersDTO.toString());
-        return usersDTO;
+        try {
+            logger.info("Getting all users public data");
+            List<User> users = usersRepository.findAll();
+            List<UserDTO> usersDTO = mapUsersToUsersDTO(users);
+            return usersDTO;
+        } catch (Exception e) {
+            throw new RuntimeException("Error getting all users public data " + e.getMessage());
+        }
     }
 
-    // @Override
-    // public List<FilePublicDTO> getAllPublicFilesByUsername(String username) {
-    // try {
-    // User user = getUserByUsername(username);
-    // Set<FilePublic> filesPublic = user.getFilesPublic();
+    @Override
+    public List<FilePublicDTO> getAllPublicFilesByUsername(String username) {
+        try {
+            logger.info("Getting all public files by username");
+            User user = getUserByUsername(username);
+            logger.info("User: " + user.toString());
+            return filePublicService.getFilesByOwner(user);
 
-    // return filePublicService.mapListFilePublicToDTOS(new
-    // ArrayList<>(filesPublic));
-    // } catch (Exception e) {
-    // throw new RuntimeException("Error getting public files " + e.getMessage());
-    // }
-    // }
+        } catch (Exception e) {
+            throw new RuntimeException("Error getting public files " + e.getMessage());
+        }
+    }
 
     @Override
     public UserDTO mapUserToUserDTO(User user) {

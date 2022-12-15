@@ -105,11 +105,11 @@ public class AwsS3Service {
     }
 
     private FilePublicDTO createFilePublicDTO(File file, String url, String key) {
+        logger.info("Convert file to FilePublicDTO: " + file.getName());
         FilePublicDTO filePublicDTO = new FilePublicDTO();
         filePublicDTO.setUrl(url);
-        // filePublicDTO.setPublicName(file.getName());
+        filePublicDTO.setPublicName(file.getName());
         filePublicDTO.setKey(key);
-        logger.info("convertToFilePublicDTO: " + filePublicDTO.toString());
         return filePublicDTO;
     }
 

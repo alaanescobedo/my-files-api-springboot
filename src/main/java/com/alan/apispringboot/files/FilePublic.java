@@ -26,7 +26,8 @@ public class FilePublic {
     @Column(name = "public_name")
     private String publicName;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    @JsonIgnore
     private User owner;
 }

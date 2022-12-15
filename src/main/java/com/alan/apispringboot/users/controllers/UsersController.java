@@ -75,13 +75,13 @@ public class UsersController {
         return new ResponseEntity<List<UserDTO>>(usersDTO, HttpStatus.OK);
     }
 
-    // @GetMapping("/{username}/public-files")
-    // public ResponseEntity<?> getPublicFilesByUserId(@PathVariable String username) {
-    //     logger.info("Get public files by username: " + username);
-    //     List<FilePublicDTO> files = usersService.getAllPublicFilesByUsername(username);
-    //     logger.info("Success get public files: " + files.toString());
-    //     return new ResponseEntity<List<FilePublicDTO>>(files, HttpStatus.OK);
-    // }
+    @GetMapping("/{username}/public-files")
+    public ResponseEntity<?> getPublicFilesByUserId(@PathVariable String username) {
+        logger.info("Get public files by username: " + username);
+        List<FilePublicDTO> files = usersService.getAllPublicFilesByUsername(username);
+        logger.info("Success get public files: " + files.toString());
+        return new ResponseEntity<List<FilePublicDTO>>(files, HttpStatus.OK);
+    }
 
 
     @PostMapping("/upload-public-file")
@@ -107,10 +107,11 @@ public class UsersController {
 
             CurrentUser currentUser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             logger.info("Current user: " + currentUser.getUsername());
-            FilePublic filePublic = usersService.uploadPublicFile(currentUser.getId(), file);
-            logger.info("File uploaded: " + filePublic.getUrl());
-            logger.info("Public file uploaded");
-            return new ResponseEntity<>(new Message("Public file uploaded"), HttpStatus.OK);
+
+            FilePublic filePublicCreated = usersService.uploadPublicFile(currentUser.getId(), file);
+            logger.info("File uploaded: " + filePublicCreated.getUrl());
+
+            return new ResponseEntity<FilePublic>(filePublicCreated, HttpStatus.CREATED);
         } catch (AmazonServiceException e) {
             logger.error("Error {} occurred while uploading public file", e.getLocalizedMessage());
             return new ResponseEntity<>(new Message("Error:" + e.getMessage()), HttpStatus.BAD_REQUEST);
