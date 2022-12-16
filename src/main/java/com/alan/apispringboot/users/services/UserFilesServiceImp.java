@@ -1,6 +1,7 @@
 package com.alan.apispringboot.users.services;
 
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import com.alan.apispringboot.files.dtos.FilePublicDTO;
 import com.alan.apispringboot.files.entities.FilePublic;
 import com.alan.apispringboot.files.services.AwsS3Service;
 import com.alan.apispringboot.files.services.FilePublicService;
+import com.alan.apispringboot.files.services.IFilePublicService;
 import com.alan.apispringboot.users.entities.User;
 import com.alan.apispringboot.users.repositories.UsersRepository;
 
@@ -28,7 +30,7 @@ public class UserFilesServiceImp implements UserFilesService {
     @Autowired
     private AwsS3Service cloudFilesService;
     @Autowired
-    private FilePublicService filePublicService;
+    private IFilePublicService filePublicService;
     @Autowired
     private UserFilesValidationService userFilesValidationService;
 
@@ -64,7 +66,7 @@ public class UserFilesServiceImp implements UserFilesService {
 
     @Override
     public List<FilePublicDTO> getAllPublicFilesByUsername(String username) {
-        logger.info("Getting all public files by username");
+        logger.info("Getting all public files by username {} ", username);
         try {
             User user = usersService.getUserByUsername(username);
             return filePublicService.getFilesByOwner(user);

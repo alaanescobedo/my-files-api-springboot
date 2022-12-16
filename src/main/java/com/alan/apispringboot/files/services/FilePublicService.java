@@ -11,19 +11,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-public class FilePublicService {
+public class FilePublicService implements IFilePublicService {
 
     private static final Logger logger = LoggerFactory.getLogger(FilePublicService.class);
 
     @Autowired
     private FilePublicRepository filePublicRepository;
 
+    @Override
     public FilePublicDTO getFilePublicById(Long id) throws NotFoundException {
         logger.info("Getting file by id: " + id);
         FilePublic filePublic = filePublicRepository.findById(id)
@@ -31,19 +33,21 @@ public class FilePublicService {
         return mapFilePublicToDTO(filePublic);
     }
 
+    @Override
     public List<FilePublicDTO> getFilesByOwner(User owner) {
-        logger.info("Getting files by owner: " + owner);
-        Set<FilePublic> files = filePublicRepository.findAllByOwner(owner);
-//        logger.info("Files: " + files.());
+        logger.info("Getting files by owner: " + owner.getUsername());
+        List<FilePublic> files = filePublicRepository.findAllByOwner(owner);
         return mapListFilePublicToDTOS(files);
     }
 
+    @Override
     public FilePublic saveFile(FilePublicDTO filePublicDTO) {
         logger.info("Saving file: " + filePublicDTO.getPublicName());
         FilePublic filePublic = mapFilePublicDTOToEntity(filePublicDTO);
         return filePublicRepository.save(filePublic);
     }
 
+    @Override
     public void deleteFileById(Long id) {
         logger.info("Deleting file by id: " + id);
         try {
@@ -54,6 +58,7 @@ public class FilePublicService {
         }
     }
 
+    @Override
     public FilePublic mapFilePublicDTOToEntity(FilePublicDTO filePublicDTO) {
         logger.info("Mapping file to entity: " + filePublicDTO.getPublicName());
         FilePublic filePublic = new FilePublic();
@@ -64,21 +69,23 @@ public class FilePublicService {
         return filePublic;
     }
 
+    @Override
     public FilePublicDTO mapFilePublicToDTO(FilePublic filePublic) {
         logger.info("Mapping file to DTO: " + filePublic.getPublicName());
         FilePublicDTO filePublicDTO = new FilePublicDTO();
         filePublicDTO.setUrl(filePublic.getUrl());
         filePublicDTO.setId(filePublic.getId());
         filePublicDTO.setPublicName(filePublic.getPublicName());
-        filePublicDTO.setOwner(filePublic.getOwner());
         return filePublicDTO;
     }
 
-    public List<FilePublicDTO> mapListFilePublicToDTOS(Set<FilePublic> files) {
-        logger.info("Mapping list of files to DTOs, size: " + files.size());
+    @Override
+    public List<FilePublicDTO> mapListFilePublicToDTOS(List<FilePublic> files) {
+        logger.info("Mapping list of files to DTOs, size {}", files.size());
         return files.stream().map(file -> mapFilePublicToDTO(file)).collect(Collectors.toList());
     }
 
+    @Override
     public String generateKey(String fileName) {
         logger.info("Generating key for file: " + fileName);
         return UUID.randomUUID().toString() + "_" + fileName;

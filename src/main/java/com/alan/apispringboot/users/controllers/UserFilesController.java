@@ -79,9 +79,14 @@ public class UserFilesController {
 
   @GetMapping("/{username}/public-files")
   public ResponseEntity<?> getPublicFilesByUserId(@PathVariable String username) {
-    logger.info("Get public files by username: " + username);
+    try {
+      logger.info("Get public files by username: " + username);
     List<FilePublicDTO> files = userFilesService.getAllPublicFilesByUsername(username);
     return new ResponseEntity<List<FilePublicDTO>>(files, HttpStatus.OK);
+    } catch (Exception e) {
+      logger.error("Error: " + e.getMessage());
+      return new ResponseEntity<>(new Message("Error: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @DeleteMapping("/public-file/{fileId}")
