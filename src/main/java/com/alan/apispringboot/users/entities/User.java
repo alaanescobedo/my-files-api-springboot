@@ -3,6 +3,7 @@ package com.alan.apispringboot.users.entities;
 import com.alan.apispringboot.files.entities.FilePublic;
 import com.alan.apispringboot.suscriptions.Suscription;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
@@ -42,7 +43,7 @@ public class User {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
-    private FilePublic avatar;
+    private UserAvatar avatar;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")

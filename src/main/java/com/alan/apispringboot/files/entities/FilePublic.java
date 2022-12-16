@@ -3,6 +3,8 @@ package com.alan.apispringboot.files.entities;
 import com.alan.apispringboot.users.entities.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 import javax.persistence.*;
@@ -29,5 +31,6 @@ public class FilePublic {
 
     @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private User owner;
 }

@@ -15,6 +15,8 @@ import com.alan.apispringboot.files.services.AwsS3Service;
 import com.alan.apispringboot.files.services.FilePublicService;
 import com.alan.apispringboot.files.services.IFilePublicService;
 import com.alan.apispringboot.users.entities.User;
+import com.alan.apispringboot.users.entities.UserAvatar;
+import com.alan.apispringboot.users.repositories.UserAvatarRepository;
 import com.alan.apispringboot.users.repositories.UsersRepository;
 
 @Service
@@ -26,6 +28,8 @@ public class UserFilesServiceImp implements UserFilesService {
     private UsersService usersService;
     @Autowired
     private UsersRepository usersRepository;
+    @Autowired
+    private UserAvatarRepository userAvatarRepository;
 
     @Autowired
     private AwsS3Service cloudFilesService;
@@ -49,16 +53,18 @@ public class UserFilesServiceImp implements UserFilesService {
     }
 
     @Override
-    public FilePublicDTO uploadAvatar(User user, MultipartFile avatarFile) throws Exception {
+    public void uploadAvatar(User user, MultipartFile avatarFile) throws Exception {
         try {
             FilePublicDTO filePublicDTO = cloudFilesService.uploadPublicFile(avatarFile);
-            filePublicDTO.setOwner(user);
-            FilePublic avatar = filePublicService.saveFile(filePublicDTO);
 
-            user.setAvatar(avatar);
+            UserAvatar userAvatar = new UserAvatar();
+            userAvatar.setKey(filePublicDTO.getKey());
+            userAvatar.setUrl(filePublicDTO.getUrl());
+            userAvatar.setPublicName(filePublicDTO.getPublicName());
+            UserAvatar userAvatarCreated = userAvatarRepository.save(userAvatar);
+            user.setAvatar(userAvatarCreated);
             usersRepository.save(user);
 
-            return filePublicService.mapFilePublicToDTO(avatar);
         } catch (Exception e) {
             throw new RuntimeException("Error setting avatar " + e.getMessage());
         }
