@@ -25,6 +25,6 @@ public class Plan {
   @Column(name = "plan_name", nullable = false, unique = true)
   private PlanEnum planName;
 
-  @Column(name = "total_upload_cloud_files", nullable = false)
-  private Integer totalCloudFiles;
+  @Column(name = "limit_cloud_files", nullable = false)
+  private Integer limitCloudFiles;
 }
