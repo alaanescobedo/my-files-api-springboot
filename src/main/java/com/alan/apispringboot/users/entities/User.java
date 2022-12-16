@@ -4,6 +4,8 @@ import com.alan.apispringboot.auth.dtos.UserDTO;
 import com.alan.apispringboot.files.entities.FilePublic;
 import com.alan.apispringboot.suscriptions.Suscription;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -52,7 +54,7 @@ public class User {
     @Column(name = "refresh_token")
     private String refreshToken;
 
-    @Column
-    @OneToOne
+    @OneToOne(mappedBy = "user")
+    @JsonManagedReference
     private Suscription suscription;
 }

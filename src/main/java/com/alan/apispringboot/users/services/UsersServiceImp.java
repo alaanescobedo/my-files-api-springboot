@@ -49,7 +49,6 @@ public class UsersServiceImp implements UsersService {
         }
     }
 
-
     @Override
     public List<UserDTO> getAllUsersPublicData() {
         logger.info("Getting all users public data");
@@ -64,7 +63,7 @@ public class UsersServiceImp implements UsersService {
 
     @Override
     public UserDTO mapUserToUserDTO(User user) {
-        logger.info("Mapping user to userDTO");
+        logger.info("Mapping user to userDTO {}", user.getUsername());
         return UserDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -72,6 +71,7 @@ public class UsersServiceImp implements UsersService {
                 .address(user.getAddress())
                 .roles(user.getRoles())
                 .avatar(user.getAvatar())
+                .suscription(user.getSuscription())
                 .build();
     }
 
