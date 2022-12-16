@@ -4,6 +4,7 @@ import com.alan.apispringboot.files.entities.FilePublic;
 import com.alan.apispringboot.suscriptions.Suscription;
 import com.alan.apispringboot.users.entities.Address;
 import com.alan.apispringboot.users.entities.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,6 +33,9 @@ public class UserDTO {
     private String email;
 
     private FilePublic avatar;
+
+    @JsonIgnore
+    private Set<FilePublic> filesPublic;
 
     @NotBlank
     private Set<Role> roles;

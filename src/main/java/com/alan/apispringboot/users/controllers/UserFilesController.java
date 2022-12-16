@@ -63,8 +63,9 @@ public class UserFilesController {
     logger.info("Upload public file: " + file.getOriginalFilename() + "- size: " + file.getSize());
     try {
       userFilesValidation.validatePublicFile(file);
-
       User user = userAuthService.getCurrentUser();
+
+      userFilesValidation.validateLimitOfFilesPerUser(user);
       FilePublicDTO filePublicCreated = userFilesService.uploadPublicFile(user, file);
       return new ResponseEntity<FilePublicDTO>(filePublicCreated, HttpStatus.CREATED);
     } catch (AmazonServiceException e) {

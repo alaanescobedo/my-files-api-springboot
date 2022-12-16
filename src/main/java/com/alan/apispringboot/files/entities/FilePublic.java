@@ -1,7 +1,9 @@
 package com.alan.apispringboot.files.entities;
 
 import com.alan.apispringboot.users.entities.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -26,7 +28,7 @@ public class FilePublic {
     @Column(name = "public_name")
     private String publicName;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     @JsonIgnore
     private User owner;

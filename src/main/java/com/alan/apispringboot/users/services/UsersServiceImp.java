@@ -69,6 +69,7 @@ public class UsersServiceImp implements UsersService {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .address(user.getAddress())
+                .filesPublic(user.getFilesPublic())
                 .roles(user.getRoles())
                 .avatar(user.getAvatar())
                 .suscription(user.getSuscription())

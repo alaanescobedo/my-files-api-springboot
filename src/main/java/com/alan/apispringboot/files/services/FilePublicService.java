@@ -34,7 +34,7 @@ public class FilePublicService {
     public List<FilePublicDTO> getFilesByOwner(User owner) {
         logger.info("Getting files by owner: " + owner);
         Set<FilePublic> files = filePublicRepository.findAllByOwner(owner);
-        logger.info("Files: " + files.toString());
+//        logger.info("Files: " + files.());
         return mapListFilePublicToDTOS(files);
     }
 

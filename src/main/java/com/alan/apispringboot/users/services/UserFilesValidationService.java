@@ -9,5 +9,5 @@ public interface UserFilesValidationService {
   void validateAvatarFile(MultipartFile avatar);
   void validatePublicFile(MultipartFile file);
   void validateOwner(User user, Long ownerId);
-  
+  void validateLimitOfFilesPerUser(User user);
 }

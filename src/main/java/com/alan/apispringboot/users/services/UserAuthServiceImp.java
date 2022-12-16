@@ -67,8 +67,7 @@ public class UserAuthServiceImp implements UserAuthService {
             user.getRoles().add(rolesService.getDefaultRole());
 
             User userCreated = usersRepository.save(user);
-
-            suscriptionsService.createBasicSuscription(userCreated);
+            suscriptionsService.createFreeSuscription(userCreated);
         } catch (Exception e) {
             throw new RuntimeException("Error creating user " + e.getMessage());
         }
