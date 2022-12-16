@@ -2,6 +2,7 @@ package com.alan.apispringboot.users.entities;
 
 import com.alan.apispringboot.auth.dtos.UserDTO;
 import com.alan.apispringboot.files.entities.FilePublic;
+import com.alan.apispringboot.suscriptions.Suscription;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
@@ -48,7 +49,10 @@ public class User {
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private Timestamp createdAt;
 
-    @Column()
+    @Column(name = "refresh_token")
     private String refreshToken;
 
+    @Column
+    @OneToOne
+    private Suscription suscription;
 }
