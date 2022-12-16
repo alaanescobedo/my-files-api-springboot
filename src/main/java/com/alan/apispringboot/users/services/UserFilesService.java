@@ -12,4 +12,5 @@ public interface UserFilesService {
   FilePublicDTO uploadPublicFile(User user, MultipartFile file) throws Exception;
   FilePublicDTO uploadAvatar(User user, MultipartFile file) throws Exception;
   List<FilePublicDTO> getAllPublicFilesByUsername(String username);
+  Long deletePublicFile(User user, Long fileId) throws Exception;
 }

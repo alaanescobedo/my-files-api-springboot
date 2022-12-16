@@ -29,6 +29,8 @@ public class UserFilesServiceImp implements UserFilesService {
   private AwsS3Service cloudFilesService;
   @Autowired
   private FilePublicService filePublicService;
+  @Autowired
+  private UserFilesValidationServiceImp userFilesValidationService;
 
   @Override
   public FilePublicDTO uploadPublicFile(User user, MultipartFile file) throws Exception {
@@ -67,6 +69,19 @@ public class UserFilesServiceImp implements UserFilesService {
       return filePublicService.getFilesByOwner(user);
     } catch (Exception e) {
       throw new RuntimeException("Error getting public files " + e.getMessage());
+    }
+  }
+
+  @Override
+  public Long deletePublicFile(User user, Long fileId) {
+    logger.info("Deleting public file with id " + fileId);
+    try {
+      FilePublicDTO filePublicDTO = filePublicService.getFilePublicById(fileId);
+      userFilesValidationService.validateOwner(user, filePublicDTO.getOwner().getId());
+      filePublicService.deleteFileById(filePublicDTO.getId());
+      return filePublicDTO.getId();
+    } catch (Exception e) {
+      throw new RuntimeException("Error deleting public file " + e.getMessage());
     }
   }
 

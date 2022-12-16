@@ -24,6 +24,13 @@ public class FilePublicService {
     @Autowired
     private FilePublicRepository filePublicRepository;
 
+    public FilePublicDTO getFilePublicById(Long id) throws NotFoundException {
+        logger.info("Getting file by id: " + id);
+        FilePublic filePublic = filePublicRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("File not found"));
+        return mapFilePublicToDTO(filePublic);
+    }
+
     public List<FilePublicDTO> getFilesByOwner(User owner) {
         logger.info("Getting files by owner: " + owner);
         Set<FilePublic> files = filePublicRepository.findAllByOwner(owner);
@@ -35,6 +42,16 @@ public class FilePublicService {
         logger.info("Saving file: " + filePublicDTO.getPublicName());
         FilePublic filePublic = mapFilePublicDTOToEntity(filePublicDTO);
         return filePublicRepository.save(filePublic);
+    }
+
+    public void deleteFileById(Long id) {
+        logger.info("Deleting file by id: " + id);
+        try {
+            filePublicRepository.deleteById(id);
+        } catch (Exception e) {
+            logger.error("Error deleting file by id: " + id);
+            throw e;
+        }
     }
 
     public FilePublic mapFilePublicDTOToEntity(FilePublicDTO filePublicDTO) {
