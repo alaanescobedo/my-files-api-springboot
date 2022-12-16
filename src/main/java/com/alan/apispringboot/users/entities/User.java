@@ -1,12 +1,13 @@
 package com.alan.apispringboot.users.entities;
 
-import com.alan.apispringboot.auth.dtos.UserDTO;
 import com.alan.apispringboot.files.entities.FilePublic;
 import com.alan.apispringboot.suscriptions.Suscription;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
+
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -20,6 +21,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 
+@DynamicInsert
 @Entity
 @Table(name = "users")
 public class User {
@@ -38,7 +40,7 @@ public class User {
     @JsonIgnore
     private String password;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "avatar_id", referencedColumnName = "id")
     private FilePublic avatar;
 
@@ -48,7 +50,7 @@ public class User {
 
     @LazyCollection(LazyCollectionOption.EXTRA)
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private Set<FilePublic> filesPublic = new HashSet<>();
+    private final Set<FilePublic> filesPublic = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -63,4 +65,8 @@ public class User {
     @OneToOne(mappedBy = "user")
     @JsonManagedReference
     private Suscription suscription;
+
+    @ColumnDefault("0")
+    @Column(name = "cloud_uploads_count")
+    private Integer cloudUploadsCount;
 }

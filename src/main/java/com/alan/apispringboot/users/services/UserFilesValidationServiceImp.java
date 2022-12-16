@@ -63,7 +63,18 @@ public class UserFilesValidationServiceImp implements UserFilesValidationService
     @Override
     public void validateLimitOfFilesPerUser(User user) {
         logger.info("Validating limit of files per user");
-        int filesCountLimit = user.getSuscription().getPlan().getLimitCloudFiles();
+
+        // TODO: Implement Event Scheduler each month to reset the counter
+        int limitCloudMonthlyUploads = user.getSuscription().getPlan().getLimitCloudMonthlyUploads();
+        logger.info("Limit of files per month: " + limitCloudMonthlyUploads);
+        int currentCloudMonthlyUploads = user.getCloudUploadsCount();
+        logger.info("Current files uploaded this month: " + currentCloudMonthlyUploads);
+
+        if (currentCloudMonthlyUploads >= limitCloudMonthlyUploads) {
+            throw new RuntimeException("User has reached the limit of files per month");
+        }
+
+        int filesCountLimit = user.getSuscription().getPlan().getLimitCloudStorage();
         int filesCount = user.getFilesPublic().size();
 
         if (filesCount >= filesCountLimit) {

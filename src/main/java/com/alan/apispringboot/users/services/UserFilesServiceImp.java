@@ -36,6 +36,7 @@ public class UserFilesServiceImp implements UserFilesService {
     public FilePublicDTO uploadPublicFile(User user, MultipartFile file) throws Exception {
         try {
             FilePublicDTO filePublicDTO = cloudFilesService.uploadPublicFile(file);
+            user.setCloudUploadsCount(user.getCloudUploadsCount() + 1);
             filePublicDTO.setOwner(user);
             FilePublic filePublic = filePublicService.saveFile(filePublicDTO);
 

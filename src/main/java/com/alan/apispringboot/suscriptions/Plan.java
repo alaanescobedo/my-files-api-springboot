@@ -17,14 +17,18 @@ import lombok.Data;
 @Table(name = "plans")
 public class Plan {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "plan_name", nullable = false, unique = true)
-  private PlanEnum planName;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "plan_name", nullable = false, unique = true)
+    private PlanEnum planName;
 
-  @Column(name = "limit_cloud_files", nullable = false)
-  private Integer limitCloudFiles;
+    @Column(name = "limit_cloud_storage", nullable = false)
+    private Integer limitCloudStorage;
+
+    @Column(name = "limit_cloud_monthly_uploads", nullable = false)
+    private Integer limitCloudMonthlyUploads;
+
 }
