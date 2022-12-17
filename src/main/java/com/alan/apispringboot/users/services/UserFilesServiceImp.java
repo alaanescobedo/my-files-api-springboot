@@ -1,6 +1,7 @@
 package com.alan.apispringboot.users.services;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.alan.apispringboot.files.dtos.FilePublicDTO;
 import com.alan.apispringboot.files.entities.FilePublic;
 import com.alan.apispringboot.files.services.AwsS3Service;
+import com.alan.apispringboot.files.services.CloudinaryService;
 import com.alan.apispringboot.files.services.FilePublicService;
 import com.alan.apispringboot.files.services.IFilePublicService;
 import com.alan.apispringboot.users.entities.User;
@@ -34,12 +36,15 @@ public class UserFilesServiceImp implements UserFilesService {
     @Autowired
     private AwsS3Service cloudFilesService;
     @Autowired
+    private CloudinaryService avatarFilesService;
+    @Autowired
     private IFilePublicService filePublicService;
     @Autowired
     private UserFilesValidationService userFilesValidationService;
 
     @Override
     public FilePublicDTO uploadPublicFile(User user, MultipartFile file) throws Exception {
+        logger.info("Uploading public file for user " + user.getUsername());
         try {
             FilePublicDTO filePublicDTO = cloudFilesService.uploadPublicFile(file);
             user.setCloudUploadsCount(user.getCloudUploadsCount() + 1);
@@ -54,8 +59,9 @@ public class UserFilesServiceImp implements UserFilesService {
 
     @Override
     public void uploadAvatar(User user, MultipartFile avatarFile) throws Exception {
+        logger.info("Uploading avatar for user " + user.getUsername());
         try {
-            FilePublicDTO filePublicDTO = cloudFilesService.uploadPublicFile(avatarFile);
+            FilePublicDTO filePublicDTO = avatarFilesService.uploadAvatar(avatarFile);
 
             UserAvatar userAvatar = new UserAvatar();
             userAvatar.setKey(filePublicDTO.getKey());
@@ -85,10 +91,10 @@ public class UserFilesServiceImp implements UserFilesService {
     public Long deletePublicFile(User user, Long fileId) {
         logger.info("Deleting public file with id " + fileId);
         try {
-            FilePublicDTO filePublicDTO = filePublicService.getFilePublicById(fileId);
-            userFilesValidationService.validateOwner(user, filePublicDTO.getOwner().getId());
-            filePublicService.deleteFileById(filePublicDTO.getId());
-            return filePublicDTO.getId();
+            FilePublic filePublic = filePublicService.getFilePublicById(fileId);
+            userFilesValidationService.validateOwner(user, filePublic.getOwner().getId());
+            filePublicService.deleteFileById(filePublic.getId());
+            return filePublic.getId();
         } catch (Exception e) {
             throw new RuntimeException("Error deleting public file " + e.getMessage());
         }

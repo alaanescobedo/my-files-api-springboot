@@ -11,9 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -26,11 +24,10 @@ public class FilePublicService implements IFilePublicService {
     private FilePublicRepository filePublicRepository;
 
     @Override
-    public FilePublicDTO getFilePublicById(Long id) throws NotFoundException {
+    public FilePublic getFilePublicById(Long id) throws NotFoundException {
         logger.info("Getting file by id: " + id);
-        FilePublic filePublic = filePublicRepository.findById(id)
+        return filePublicRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("File not found"));
-        return mapFilePublicToDTO(filePublic);
     }
 
     @Override

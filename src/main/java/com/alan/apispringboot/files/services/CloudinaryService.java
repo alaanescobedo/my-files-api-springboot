@@ -1,5 +1,6 @@
 package com.alan.apispringboot.files.services;
 
+import com.alan.apispringboot.files.dtos.FilePublicDTO;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import org.slf4j.Logger;
@@ -25,9 +26,8 @@ public class CloudinaryService {
     public CloudinaryService(
             @Value("${cloudinary.cloudName}") String cloudName,
             @Value("${cloudinary.apiKey}") String apiKey,
-            @Value("${cloudinary.apiSecret}") String apiSecret
-    ) {
-        Map config = new HashMap();
+            @Value("${cloudinary.apiSecret}") String apiSecret) {
+        Map<String, String> config = new HashMap<>();
         config.put("cloud_name", cloudName);
         config.put("api_key", apiKey);
         config.put("api_secret", apiSecret);
@@ -36,17 +36,25 @@ public class CloudinaryService {
 
     }
 
-    public Map upload(MultipartFile file) throws IOException {
+    public FilePublicDTO uploadAvatar(MultipartFile file) throws IOException {
         try {
             logger.info("Uploading file to cloudinary");
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+            // TODO: Find a way to get the file name without the extension, this works in
+            // the most common cases
+            String fileName = file.getOriginalFilename().split("\\.")[0];
+
+            Map<String, String> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
                     "folder", "avatars",
-                    "public_id", file.getOriginalFilename(),
+                    "public_id", fileName,
                     "format", "webp",
                     "allowed_formats", "webp, png, jpg, jpeg",
-                    "moderation", "manual"
-            ));
-            return uploadResult;
+                    "transformation", "c_fill,h_200,w_200",
+                    "overwrite", "true"));
+            FilePublicDTO fileData = new FilePublicDTO();
+            fileData.setUrl(uploadResult.get("url"));
+            fileData.setKey(uploadResult.get("public_id"));
+            fileData.setPublicName(uploadResult.get("public_id"));
+            return fileData;
         } catch (Exception e) {
             logger.error("Error uploading file to cloudinary: " + e.getMessage());
             throw new IOException(e);

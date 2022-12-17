@@ -1,7 +1,6 @@
 package com.alan.apispringboot.files.services;
 
 import java.util.List;
-import java.util.Set;
 
 import com.alan.apispringboot.exceptions.NotFoundException;
 import com.alan.apispringboot.files.dtos.FilePublicDTO;
@@ -10,7 +9,7 @@ import com.alan.apispringboot.users.entities.User;
 
 public interface IFilePublicService {
 
-  public FilePublicDTO getFilePublicById(Long id) throws NotFoundException;
+  public FilePublic getFilePublicById(Long id) throws NotFoundException;
 
   public List<FilePublicDTO> getFilesByOwner(User owner);
 
