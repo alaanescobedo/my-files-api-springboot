@@ -1,9 +1,8 @@
 package com.alan.apispringboot.users.entities;
 
 import com.alan.apispringboot.files.entities.FilePublic;
-import com.alan.apispringboot.suscriptions.Suscription;
+import com.alan.apispringboot.subscription.Subscription;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
@@ -65,7 +64,7 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     @JsonManagedReference
-    private Suscription suscription;
+    private Subscription subscription;
 
     @ColumnDefault("0")
     @Column(name = "cloud_uploads_count")

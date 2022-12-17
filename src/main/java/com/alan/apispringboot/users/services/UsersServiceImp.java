@@ -54,8 +54,7 @@ public class UsersServiceImp implements UsersService {
         logger.info("Getting all users public data");
         try {
             List<User> users = usersRepository.findAll();
-            List<UserDTO> usersDTO = mapUsersToUsersDTO(users);
-            return usersDTO;
+            return mapUsersToUsersDTO(users);
         } catch (Exception e) {
             throw new RuntimeException("Error getting all users public data " + e.getMessage());
         }
@@ -72,12 +71,12 @@ public class UsersServiceImp implements UsersService {
                 .filesPublic(user.getFilesPublic())
                 .roles(user.getRoles())
                 .avatar(user.getAvatar())
-                .suscription(user.getSuscription())
+                .subscription(user.getSubscription())
                 .build();
     }
 
     private List<UserDTO> mapUsersToUsersDTO(List<User> users) {
         logger.info("Mapping users to usersDTO");
-        return users.stream().map(user -> mapUserToUserDTO(user)).collect(Collectors.toList());
+        return users.stream().map(this::mapUserToUserDTO).collect(Collectors.toList());
     }
 }

@@ -1,4 +1,4 @@
-package com.alan.apispringboot.suscriptions;
+package com.alan.apispringboot.subscription;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

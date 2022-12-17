@@ -1,4 +1,4 @@
-package com.alan.apispringboot.suscriptions;
+package com.alan.apispringboot.subscription;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

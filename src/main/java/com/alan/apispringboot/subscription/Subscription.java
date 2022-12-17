@@ -1,19 +1,17 @@
-package com.alan.apispringboot.suscriptions;
+package com.alan.apispringboot.subscription;
 
 import javax.persistence.*;
 
 import com.alan.apispringboot.users.entities.User;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @Data
 
 @Entity
-@Table(name = "suscriptions")
-public class Suscription {
+@Table(name = "subscriptions")
+public class Subscription {
   
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

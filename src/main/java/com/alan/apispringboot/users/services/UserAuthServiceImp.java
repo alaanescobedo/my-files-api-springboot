@@ -1,6 +1,5 @@
 package com.alan.apispringboot.users.services;
 
-import com.alan.apispringboot.suscriptions.Suscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ import com.alan.apispringboot.auth.dtos.AuthUserDTO;
 import com.alan.apispringboot.auth.dtos.RegisterUserDTO;
 import com.alan.apispringboot.auth.dtos.UserDTO;
 import com.alan.apispringboot.security.CurrentUser;
-import com.alan.apispringboot.suscriptions.SuscriptionsService;
+import com.alan.apispringboot.subscription.SubscriptionService;
 import com.alan.apispringboot.users.entities.User;
 import com.alan.apispringboot.users.repositories.UsersRepository;
 
@@ -31,7 +30,7 @@ public class UserAuthServiceImp implements UserAuthService {
     @Autowired
     private RolesService rolesService;
     @Autowired
-    private SuscriptionsService suscriptionsService;
+    private SubscriptionService subscriptionService;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -67,7 +66,7 @@ public class UserAuthServiceImp implements UserAuthService {
             user.getRoles().add(rolesService.getDefaultRole());
 
             User userCreated = usersRepository.save(user);
-            suscriptionsService.createFreeSuscription(userCreated);
+            subscriptionService.createFreeSubscription(userCreated);
         } catch (Exception e) {
             throw new RuntimeException("Error creating user " + e.getMessage());
         }

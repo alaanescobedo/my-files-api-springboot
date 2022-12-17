@@ -1,4 +1,4 @@
-package com.alan.apispringboot.suscriptions;
+package com.alan.apispringboot.subscription;
 
 public enum PlanEnum {
   PLAN_FREE,

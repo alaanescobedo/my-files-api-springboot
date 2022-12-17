@@ -65,7 +65,7 @@ public class UserFilesValidationServiceImp implements UserFilesValidationService
         logger.info("Validating limit of files per user");
 
         // TODO: Implement Event Scheduler each month to reset the counter
-        int limitCloudMonthlyUploads = user.getSuscription().getPlan().getLimitCloudMonthlyUploads();
+        int limitCloudMonthlyUploads = user.getSubscription().getPlan().getLimitCloudMonthlyUploads();
         logger.info("Limit of files per month: " + limitCloudMonthlyUploads);
         int currentCloudMonthlyUploads = user.getCloudUploadsCount();
         logger.info("Current files uploaded this month: " + currentCloudMonthlyUploads);
@@ -74,7 +74,7 @@ public class UserFilesValidationServiceImp implements UserFilesValidationService
             throw new RuntimeException("User has reached the limit of files per month");
         }
 
-        int filesCountLimit = user.getSuscription().getPlan().getLimitCloudStorage();
+        int filesCountLimit = user.getSubscription().getPlan().getLimitCloudStorage();
         int filesCount = user.getFilesPublic().size();
 
         if (filesCount >= filesCountLimit) {

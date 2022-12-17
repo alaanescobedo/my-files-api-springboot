@@ -1,7 +1,7 @@
 package com.alan.apispringboot.auth.dtos;
 
 import com.alan.apispringboot.files.entities.FilePublic;
-import com.alan.apispringboot.suscriptions.Suscription;
+import com.alan.apispringboot.subscription.Subscription;
 import com.alan.apispringboot.users.entities.Address;
 import com.alan.apispringboot.users.entities.Role;
 import com.alan.apispringboot.users.entities.UserAvatar;
@@ -42,5 +42,5 @@ public class UserDTO {
     private Set<Role> roles;
     private Address address;
 
-    private Suscription suscription;
+    private Subscription subscription;
 }
