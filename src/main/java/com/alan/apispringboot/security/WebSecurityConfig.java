@@ -36,7 +36,7 @@ public class WebSecurityConfig {
     public JwtFilter jwtFilter() {
         return new JwtFilter();
     }
-    @Value("${app.cors.allowed-origins}")
+    @Value("${app.coors.allowed-origins}")
     private String[] allowedOrigins;
 
     @Bean
