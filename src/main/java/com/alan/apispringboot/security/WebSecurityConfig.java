@@ -65,8 +65,9 @@ public class WebSecurityConfig {
         http.csrf().disable();
 
         http.authorizeRequests()
-                .antMatchers("/auth/register","/auth/login").permitAll()
+                .antMatchers("/auth/register", "/auth/login").permitAll()
                 .antMatchers("/users/public-profiles").permitAll()
+                .antMatchers("/user-files/**/public-files").permitAll()
                 .anyRequest().authenticated();
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
