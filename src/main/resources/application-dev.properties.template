@@ -1,29 +1,41 @@
+## SERVER
+server.port=8080
+
 ## DATABASE
-spring.datasource.url=
-spring.datasource.username=
-spring.datasource.password=
-spring.jpa.hibernate.ddl-auto=
-spring.jpa.show-sql=
+spring.datasource.url=postgresql://localhost:5432/springbootdb
+spring.datasource.username=postgres
+spring.datasource.password=postgres
+spring.jpa.hibernate.ddl-auto=create
+spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 
 ## JWT
-jwt.accessSecret=
-jwt.AccessExpiration=
-jwt.refreshSecret=
-jwt.refreshExpiration=
+jwt.accessSecret=ultraSecretKeyAccessSuperSecretKeyUltraSecretKeyAccessMegaSecretKey123456789012356789AccessAccess
+jwt.AccessExpiration=3600
+jwt.refreshSecret=ultraSecretKeyRefreshSuperSecretKeyUltraSecretKeyRefreshMegaSecretKey123456789012356789RefreshRefresh
+jwt.refreshExpiration=86400
 
 ## COOKIES
-jwt.accessTokenCookieName=
-jwt.refreshTokenCookieName=
-cookie.domain=
+jwt.accessTokenCookieName=access_token
+jwt.refreshTokenCookieName=refesh_token
+
+cookie.domain=localhost
+cookie.secure=false
+cookie.httpOnly=true
+cookie.path=/
+cookie.sameSite=None
 
 ## CLOUDINARY
 cloudinary.cloudName=
 cloudinary.apiKey=
 cloudinary.apiSecret=
 
+## AWS
+aws.accessKey=
+aws.secretKey=
+aws.region=
+aws.bucketName=
+aws.bucketNamePrivate=
+
 ## CORS
 app.cors.allowed-origins=http://localhost:3000
-
-## SERVER
-server.port=5000

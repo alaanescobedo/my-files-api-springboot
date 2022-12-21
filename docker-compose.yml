@@ -3,13 +3,15 @@ services:
   app:
     container_name: app-springboot
     image: app-springboot
-    build:
-        context: .
-        dockerfile: Dockerfile
+    build: .
     ports:
-      - "5200:8080"
+      - "8080:8080"
     depends_on:
       - postgres
+    networks:
+      - postgres
+    links:
+      - postgres:postgres
 
   postgres:
     container_name: postgres
@@ -29,7 +31,7 @@ services:
     container_name: pgadmin
     image: dpage/pgadmin4
     ports:
-      - "5100:80"
+      - "8081:80"
     volumes:
       - /data/pgadmin:/root/.pgadmin
     env_file:
