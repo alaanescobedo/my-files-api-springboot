@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -63,12 +64,12 @@ public class AuthController {
 
         try {
             Authentication authentication = userAuthService.createAuthentication(authUserDTO);
-            Cookie atCookie = authService.getCookieWithAccessToken(authentication);
-            Cookie rtCookie = authService.getCookieWithRefreshToken(authentication);
+            ResponseCookie atCookie = authService.getCookieWithAccessToken(authentication);
+            ResponseCookie rtCookie = authService.getCookieWithRefreshToken(authentication);
             userAuthService.saveRefreshToken(rtCookie.getValue(), authUserDTO.getUsername());
 
-            response.addCookie(atCookie);
-            response.addCookie(rtCookie);
+            response.addHeader("Set-Cookie", atCookie.toString());
+            response.addHeader("Set-Cookie", rtCookie.toString());
             return new ResponseEntity<Message>(new Message("Logged in successfully"), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error login user: " + e.getMessage());
@@ -93,8 +94,8 @@ public class AuthController {
         logger.info("Logging out user");
         try {
             SecurityContextHolder.clearContext();
-            List<Cookie> cookies = authService.getCookiesForLogout();
-            cookies.forEach(response::addCookie);
+            List<ResponseCookie> cookies = authService.getCookiesForLogout();
+            cookies.forEach(c -> response.addHeader("Set-Cookie", c.toString()));
             return new ResponseEntity<Message>(new Message("Logged out successfully"), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error logging out user: " + e.getMessage());
@@ -107,8 +108,9 @@ public class AuthController {
         logger.info("Refreshing token");
         try {
             Authentication authentication = userAuthService.getAuthentication();
-            Cookie atCookie = authService.getCookieWithAccessToken(authentication);
-            response.addCookie(atCookie);
+            ResponseCookie atCookie = authService.getCookieWithAccessToken(authentication);
+
+            response.addHeader("Set-Cookie", atCookie.toString());
             return new ResponseEntity<Message>(new Message("Refreshed successfully"), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error refreshing token: " + e.getMessage());

@@ -1,6 +1,8 @@
 package com.alan.apispringboot.security.cookie;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
@@ -19,20 +21,23 @@ public class JwtCookieProvider {
     @Value("${cookie.domain}")
     private String domain;
 
-    public Cookie generateAccessCookie(String token) {
-        return CookieUtil.create(atCookieName, token, false, -1, domain);
+    @Autowired
+    private CookieUtil cookieUtil;
+
+    public ResponseCookie generateAccessCookie(String token) {
+        return cookieUtil.create(atCookieName, token, atExpiration);
     }
 
-    public Cookie generateRefreshCookie(String token) {
-        return CookieUtil.create(rtCookieName, token, false, -1, domain);
+    public ResponseCookie generateRefreshCookie(String token) {
+        return cookieUtil.create(rtCookieName, token, rtExpiration);
     }
 
-    public Cookie clearAccessCookie() {
-        return CookieUtil.clear(atCookieName, domain);
+    public ResponseCookie clearAccessCookie() {
+        return cookieUtil.clear(atCookieName);
     }
 
-    public Cookie clearRefreshCookie() {
-        return CookieUtil.clear(rtCookieName, domain);
+    public ResponseCookie clearRefreshCookie() {
+        return cookieUtil.clear(rtCookieName);
     }
 
 }

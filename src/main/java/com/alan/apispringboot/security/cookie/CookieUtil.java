@@ -1,5 +1,7 @@
 package com.alan.apispringboot.security.cookie;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
@@ -7,17 +9,27 @@ import javax.servlet.http.Cookie;
 @Component
 public class CookieUtil {
 
-    public static Cookie create(String name, String value, boolean secure, int maxAge, String domain) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setSecure(secure);
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(maxAge);
-        cookie.setPath("/");
-        cookie.setDomain(domain);
-        return cookie;
+    @Value("${cookie.domain}")
+    private String domain;
+    @Value("${cookie.path}")
+    private String path;
+    @Value("${cookie.secure}")
+    private boolean secure;
+    @Value("${cookie.httpOnly}")
+    private boolean httpOnly;
+
+
+    public ResponseCookie create(String name, String value, int maxAge) {
+        return ResponseCookie.from(name, value)
+                .maxAge(maxAge)
+                .domain(domain)
+                .path(path)
+                .secure(secure)
+                .httpOnly(httpOnly)
+                .build();
     }
 
-    public static Cookie clear(String name, String domain) {
-        return create(name, null, true, 1, domain);
+    public ResponseCookie clear(String name) {
+        return create(name, null,1);
     }
 }

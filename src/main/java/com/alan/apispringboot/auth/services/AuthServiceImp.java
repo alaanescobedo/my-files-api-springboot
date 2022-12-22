@@ -5,6 +5,7 @@ import com.alan.apispringboot.security.jwt.JwtProvider;
 import com.alan.apispringboot.users.entities.User;
 import com.alan.apispringboot.users.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,21 +37,21 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
-    public Cookie getCookieWithAccessToken(Authentication authentication) {
+    public ResponseCookie getCookieWithAccessToken(Authentication authentication) {
         String token = jwtProvider.generateAccessToken(authentication);
         return jwtCookieProvider.generateAccessCookie(token);
     }
 
     @Override
-    public Cookie getCookieWithRefreshToken(Authentication authentication) {
+    public ResponseCookie getCookieWithRefreshToken(Authentication authentication) {
         String token = jwtProvider.generateRefreshToken(authentication);
         return jwtCookieProvider.generateRefreshCookie(token);
     }
 
     @Override
-    public List<Cookie> getCookiesForLogout() {
-        Cookie atCookie = jwtCookieProvider.clearAccessCookie();
-        Cookie rtCookie = jwtCookieProvider.clearRefreshCookie();
+    public List<ResponseCookie> getCookiesForLogout() {
+        ResponseCookie atCookie = jwtCookieProvider.clearAccessCookie();
+        ResponseCookie rtCookie = jwtCookieProvider.clearRefreshCookie();
         return Arrays.asList(atCookie, rtCookie);
     }
 
