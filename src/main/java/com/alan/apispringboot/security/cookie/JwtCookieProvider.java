@@ -10,7 +10,7 @@ public class JwtCookieProvider {
 
     @Value("${jwt.accessTokenCookieName}")
     private String atCookieName;
-    @Value("${jwt.AccessExpiration}")
+    @Value("${jwt.accessExpiration}")
     private int atExpiration;
     @Value("${jwt.refreshTokenCookieName}")
     private String rtCookieName;

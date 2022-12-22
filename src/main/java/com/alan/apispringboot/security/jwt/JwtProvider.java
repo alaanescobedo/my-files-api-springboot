@@ -18,7 +18,7 @@ public class JwtProvider {
     @Value("${jwt.accessSecret}")
     private String atSecret;
 
-    @Value("${jwt.AccessExpiration}")
+    @Value("${jwt.accessExpiration}")
     private int atExpiration;
 
     @Value("${jwt.refreshSecret}")

@@ -11,7 +11,7 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 
 ## JWT
 jwt.accessSecret=ultraSecretKeyAccessSuperSecretKeyUltraSecretKeyAccessMegaSecretKey123456789012356789AccessAccess
-jwt.AccessExpiration=3600
+jwt.accessExpiration=3600
 jwt.refreshSecret=ultraSecretKeyRefreshSuperSecretKeyUltraSecretKeyRefreshMegaSecretKey123456789012356789RefreshRefresh
 jwt.refreshExpiration=86400
 
